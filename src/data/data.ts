@@ -1,4 +1,5 @@
 import { IQuestionData } from './question-data.interface';
+import { IAnswerData } from './answer-data.interface';
 
 export const questions: IQuestionData[] = [
   {
@@ -41,6 +42,71 @@ export const getUnansweredQuestions = async (): Promise<IQuestionData[]> => {
   return questions.filter((question) => question.answers.length === 0);
 };
 
+export const getAnsweredQuestions = async (): Promise<IQuestionData[]> => {
+  await 500;
+  return questions.filter((q) => q.answers.length > 0);
+};
+
+export const getQuestion = async (
+  questionId: number,
+): Promise<IQuestionData | undefined> => {
+  await wait(500);
+  return questions.find((q) => q.questionId === questionId);
+};
+
+export const searchQuestions = async (
+  criteria: string,
+): Promise<IQuestionData[]> => {
+  await wait(500);
+  return questions.filter(
+    (q) =>
+      q.title.toLowerCase().includes(criteria.toLowerCase()) ||
+      q.content.toLowerCase().includes(criteria.toLowerCase()),
+  );
+};
+
 const wait = (ms: number): Promise<void> => {
   return new Promise((res) => setTimeout(res, ms));
+};
+
+export interface IPostQuestionData {
+  title: string;
+  content: string;
+  userName: string;
+  created: Date;
+}
+
+export const postQuestion = async (
+  question: IPostQuestionData,
+): Promise<IQuestionData | undefined> => {
+  await wait(500);
+  const questionId = Math.max(...questions.map((q) => q.questionId)) + 1;
+  const newQuestion: IQuestionData = {
+    ...question,
+    questionId,
+    answers: [],
+  };
+  return newQuestion;
+};
+
+export interface IPostAnswerData {
+  questionId: number;
+  content: string;
+  userName: string;
+  created: Date;
+}
+
+export const postAnswer = async (
+  answer: IPostAnswerData,
+): Promise<IAnswerData | undefined> => {
+  await wait(500);
+  const question = questions.filter(
+    (q) => q.questionId === answer.questionId,
+  )[0];
+  const answerInQuestion: IAnswerData = {
+    answerId: 99,
+    ...answer,
+  };
+  question.answers.push(answerInQuestion);
+  return answerInQuestion;
 };

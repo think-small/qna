@@ -1,5 +1,6 @@
 // eslint-disable-next-line
 import React, { FC } from 'react';
+import { Link } from 'react-router-dom';
 /** @jsx jsx */
 import { css, jsx } from '@emotion/core';
 import { IQuestionData } from '../../data/question-data.interface';
@@ -22,7 +23,15 @@ const Question: FC<IProps> = ({ data, showContent = true }) => (
         font-size: 19px;
       `}
     >
-      {data.title}
+      <Link
+        css={css`
+          text-decoration: none;
+          color: ${gray2};
+        `}
+        to={`question/${data.questionId}`}
+      >
+        {data.title}
+      </Link>
     </div>
     {showContent && (
       <div

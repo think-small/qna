@@ -1,5 +1,6 @@
 //  eslint-disable-next-line
-import React, { ChangeEvent } from 'react';
+import React, { FC, ChangeEvent, FormEvent, useState } from 'react';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 import UserIcon from '../user-icon/user-icon.component';
 /** @jsx jsx */
 import { css, jsx } from '@emotion/core';
@@ -11,9 +12,24 @@ import {
   gray5,
 } from '../../styles/base.styles';
 
-const Header = () => {
+const Header: FC = () => {
+  const history = useHistory();
+  const location = useLocation();
+
+  //  Get query string and store it in state
+  const searchParam = new URLSearchParams(location.search);
+  const criteria = searchParam.get('criteria') || '';
+
+  const [search, setSearch] = useState(criteria);
+
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    console.log(e.currentTarget.value);
+    const val = e.currentTarget.value;
+    setSearch(() => val);
+  };
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    history.push(`/search?criteria=${search}`);
   };
 
   return (
@@ -32,8 +48,8 @@ const Header = () => {
         box-shadow: 0 3px 7px 0 rgba(110, 112, 114, 0.21);
       `}
     >
-      <a
-        href="./"
+      <Link
+        to="/"
         css={css`
           font-size: 24px;
           font-weight: bold;
@@ -42,29 +58,32 @@ const Header = () => {
         `}
       >
         Q and A
-      </a>
-      <input
-        type="text"
-        placeholder="Search..."
-        onChange={handleChange}
-        css={css`
-          box-sizing: border-box;
-          font-family: ${fontFamily};
-          font-size: ${fontSize};
-          padding: 8px 10px;
-          border: 1px solid ${gray5};
-          border-radius: 3px;
-          color: ${gray2};
-          background-color: white;
-          width: 200px;
-          height: 30px;
-          :focus {
-            outline-color: ${gray5};
-          }
-        `}
-      />
-      <a
-        href="./signin"
+      </Link>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          placeholder="Search..."
+          value={search}
+          onChange={handleChange}
+          css={css`
+            box-sizing: border-box;
+            font-family: ${fontFamily};
+            font-size: ${fontSize};
+            padding: 8px 10px;
+            border: 1px solid ${gray5};
+            border-radius: 3px;
+            color: ${gray2};
+            background-color: white;
+            width: 200px;
+            height: 30px;
+            :focus {
+              outline-color: ${gray5};
+            }
+          `}
+        />
+      </form>
+      <Link
+        to="/signin"
         css={css`
           font-family: ${fontFamily};
           font-size: ${fontSize};
@@ -85,7 +104,7 @@ const Header = () => {
           <UserIcon />
           Sign In
         </span>
-      </a>
+      </Link>
     </header>
   );
 };

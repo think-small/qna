@@ -4,7 +4,8 @@ import { PrimaryButton } from '../../components/primary-button/primary-button.co
 import QuestionList from '../../components/question-list/question-list.component';
 import { Title } from '../../components/title/title.component';
 import Layout from '../page-layout/page-layout.page';
-import { getUnansweredQuestions } from '../../data/data';
+import { useHistory } from 'react-router-dom';
+import { getUnansweredQuestions, getAnsweredQuestions } from '../../data/data';
 import { IQuestionData } from '../../data/question-data.interface';
 /**@jsx jsx */
 import { css, jsx } from '@emotion/core';
@@ -12,18 +13,20 @@ import { css, jsx } from '@emotion/core';
 const HomePage = () => {
   const [questions, setQuestions] = useState<IQuestionData[]>([]);
   const [loadingQuestions, setLoadingQuestions] = useState(true);
+  const history = useHistory();
 
   useEffect(() => {
     const doGetUnansweredQuestions = async () => {
       const unansweredQuestions = await getUnansweredQuestions();
-      setQuestions(unansweredQuestions);
+      const answeredQuestions = await getAnsweredQuestions();
+      setQuestions(answeredQuestions);
       setLoadingQuestions(false);
     };
     doGetUnansweredQuestions();
   }, []);
 
   const handleClick = () => {
-    alert('Redirect to AskPage');
+    history.push('/ask');
   };
 
   return (
