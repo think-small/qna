@@ -7,34 +7,40 @@ import SigninPage from './pages/signin/signin.page';
 import QuestionPage from './pages/question/question.page';
 import NotFoundPage from './pages/not-found/not-found.page';
 import Header from './components/header/header.component';
+import { Provider } from 'react-redux';
+import { configureStore } from './store/store';
 /** @jsx jsx */
 import { css, jsx } from '@emotion/core';
 import { fontFamily, fontSize, gray2 } from './styles/base.styles';
 
 const App: React.FC = () => {
+  const store = configureStore();
+
   return (
-    <BrowserRouter>
-      <div
-        className="App"
-        css={css`
-          font-family: ${fontFamily};
-          font-size: ${fontSize};
-          color: ${gray2};
-          text-align: center;
-        `}
-      >
-        <Header />
-        <Switch>
-          <Redirect from="/home" to="/" />
-          <Route exact path="/" component={HomePage} />
-          <Route path="/search" component={SearchPage} />
-          <Route path="/ask" component={AskPage} />
-          <Route path="/signin" component={SigninPage} />
-          <Route path="/question/:questionId" component={QuestionPage} />
-          <Route component={NotFoundPage} />
-        </Switch>
-      </div>
-    </BrowserRouter>
+    <Provider store={store}>
+      <BrowserRouter>
+        <div
+          className="App"
+          css={css`
+            font-family: ${fontFamily};
+            font-size: ${fontSize};
+            color: ${gray2};
+            text-align: center;
+          `}
+        >
+          <Header />
+          <Switch>
+            <Redirect from="/home" to="/" />
+            <Route exact path="/" component={HomePage} />
+            <Route path="/search" component={SearchPage} />
+            <Route path="/ask" component={AskPage} />
+            <Route path="/signin" component={SigninPage} />
+            <Route path="/question/:questionId" component={QuestionPage} />
+            <Route component={NotFoundPage} />
+          </Switch>
+        </div>
+      </BrowserRouter>
+    </Provider>
   );
 };
 

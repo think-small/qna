@@ -80,12 +80,14 @@ export const postQuestion = async (
   question: IPostQuestionData,
 ): Promise<IQuestionData | undefined> => {
   await wait(500);
-  const questionId = Math.max(...questions.map((q) => q.questionId)) + 1;
+  const ids = questions.map((q) => q.questionId);
+  const questionId = Math.max(...ids) + 1;
   const newQuestion: IQuestionData = {
     ...question,
     questionId,
     answers: [],
   };
+  questions.push(newQuestion);
   return newQuestion;
 };
 

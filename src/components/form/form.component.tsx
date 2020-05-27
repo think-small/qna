@@ -1,3 +1,4 @@
+// eslint-disable-next-line
 import React, { FC, useState, createContext, FormEvent } from 'react';
 import { PrimaryButton } from '../primary-button/primary-button.component';
 /** @jsx jsx */
@@ -57,7 +58,8 @@ export interface ISubmitResult {
 interface IProps {
   submitCaption?: string;
   validationRules?: IValidationProp;
-  onSubmit: (values: Values) => Promise<ISubmitResult>;
+  onSubmit: (values: Values) => Promise<ISubmitResult> | void;
+  submitResult?: ISubmitResult;
   successMessage?: string;
   failureMessage?: string;
 }
@@ -66,6 +68,7 @@ export const Form: FC<IProps> = ({
   submitCaption,
   validationRules,
   onSubmit,
+  submitResult,
   successMessage = 'Successful Submission',
   failureMessage = 'Submission failed',
   children,
@@ -104,6 +107,9 @@ export const Form: FC<IProps> = ({
       setSubmitError(false);
       //  Call the consumer submit function
       const result = await onSubmit(values);
+
+      //  Result may be passed through as a prop
+      if (!result) return;
       //  Set any errors in state
       setErrors(result.errors || {});
       setSubmitError(!result.success);
@@ -131,6 +137,16 @@ export const Form: FC<IProps> = ({
     return !haveError;
   };
 
+  const disabled = submitResult
+    ? submitResult.success
+    : submitting || (submitted && !submitError);
+  const showError = submitResult
+    ? !submitResult.success
+    : submitted && submitError;
+  const showSuccess = submitResult
+    ? submitResult.success
+    : submitted && !submitError;
+
   return (
     <FormContext.Provider
       value={{
@@ -150,7 +166,7 @@ export const Form: FC<IProps> = ({
     >
       <form noValidate={true} onSubmit={handleSubmit}>
         <fieldset
-          disabled={submitting || (submitted && !submitError)}
+          disabled={disabled}
           css={css`
             margin: 10px auto 0 auto;
             padding: 30px;
@@ -171,7 +187,7 @@ export const Form: FC<IProps> = ({
           >
             <PrimaryButton type="submit">{submitCaption}</PrimaryButton>
           </div>
-          {submitted && submitError && (
+          {showError && (
             <p
               css={css`
                 color: red;
@@ -180,7 +196,7 @@ export const Form: FC<IProps> = ({
               {failureMessage}
             </p>
           )}
-          {submitted && !submitError && (
+          {showSuccess && (
             <p
               css={css`
                 color: green;
